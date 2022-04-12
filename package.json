@@ -15,5 +15,8 @@
   "bugs": {
     "url": "https://github.com/University-of-Potsdam-MM/zukunftstag2022-game/issues"
   },
-  "homepage": "https://github.com/University-of-Potsdam-MM/zukunftstag2022-game#readme"
+  "homepage": "https://github.com/University-of-Potsdam-MM/zukunftstag2022-game#readme",
+  "dependencies": {
+    "nginx": "^1.0.7"
+  }
 }
