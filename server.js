@@ -1,10 +1,31 @@
-var http = require('http');
+import { createServer } from "http";
+import { readFile } from "fs";
 
-http
-  .createServer(function(req, res) {
-    res.write('Hello, Node.js!'); //write a response to the client
-    res.end(); //end the response
-  })
-  .listen(8080); //the server object listens on port 8080
-
-console.log('Server running on port 8080');
+createServer(function (req, res) {
+  if (req.url === "/") {
+    readFile("game/zukunftstag.html", function (err, data) {
+      if (err) {
+        console.log(err);
+      } else {
+        res.writeHead(200, {
+          "Content-Type": "text/html",
+        });
+        res.write(data);
+        res.end();
+      }
+    });
+  } else {
+    console.log(req.url);
+    readFile("game" + req.url, function (err, data) {
+      if (err) {
+        console.log(err);
+      } else {
+        res.writeHead(200, {
+          "Content-Type": "application/javascript",
+        });
+        res.write(data);
+        res.end();
+      }
+    });
+  }
+}).listen(8080);

@@ -2,6 +2,7 @@
   "name": "zukunftstag2022-game",
   "version": "1.0.0",
   "private": true,
+  "type": "module",
   "dependencies": {
     "nodemon": "^2.0.15"
   },
