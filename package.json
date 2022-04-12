@@ -1,9 +1,9 @@
 {
-  "name": "node-starter",
-  "version": "0.0.0",
+  "name": "zukunftstag2022-game",
+  "version": "1.0.0",
   "private": true,
   "dependencies": {
-    "nodemon": "^2.0.7"
+    "nodemon": "^2.0.15"
   },
   "scripts": {}
 }
