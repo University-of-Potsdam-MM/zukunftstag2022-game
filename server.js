@@ -32,9 +32,11 @@ createServer(function (req, res) {
       if (err) {
         console.log(err);
       } else {
-        res.writeHead(200, {
-          "Content-Type": "application/javascript",
-        });
+        if (req.url.indexOf(".js") > 0) {
+          res.writeHead(200, {
+            "Content-Type": "application/javascript",
+          });
+        }
         res.write(data);
         res.end();
       }
