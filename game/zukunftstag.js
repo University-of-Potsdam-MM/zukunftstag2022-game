@@ -1,10 +1,7 @@
 // These should be modifiable by the player
-let maxSpriteCount = 20;
+let maxIconCount = 20;
 let accelerationFactor = 1;
-
-let spriteCount = 0;
-var sprites = [];
-var isSpriteShrinking = [];
+let iconURL = "https://s3-us-west-2.amazonaws.com/s.cdpn.io/106114/bee.svg";
 
 // Create the application helper and add its render target to the page
 let app = new PIXI.Application({
@@ -13,95 +10,100 @@ let app = new PIXI.Application({
 });
 document.body.appendChild(app.view);
 
-// Create the texture
-let svgUrl = "https://s3-us-west-2.amazonaws.com/s.cdpn.io/106114/bee.svg";
-let svgTexture = new PIXI.Texture.from(svgUrl);
-addSprite();
+let iconCount = 0;
+var icons = [];
+var isIconShrinking = [];
 
-// Add a ticker callback to move the sprites
+// Create the texture
+let texture = new PIXI.Texture.from(iconURL);
+addNewIcon();
+
+// Add a ticker callback to move the icons
 app.ticker.add(() => {
-  for (i = 0; i < sprites.length; i++) {
-    moveSprite(sprites[i]);
-    changeSpriteSize(sprites[i], i);
+  for (i = 0; i < icons.length; i++) {
+    moveIcon(icons[i]);
+    changeIconSize(icons[i], i);
   }
 
-  if (spriteCount < maxSpriteCount) {
-    addSprite();
+  if (iconCount < maxIconCount) {
+    addNewIcon();
   }
 });
 
-// Create a new sprite with randomized properties
-function addSprite() {
-  var sprite = new PIXI.Sprite(svgTexture);
-  sprite.position.x = Math.random() * window.innerWidth;
-  sprite.position.y = Math.random() * window.innerHeight;
-  sprite.speedX = (Math.random() - 0.5) * 2;
-  sprite.speedY = (Math.random() - 0.5) * 2;
+// Create a new icon with randomized properties
+function addNewIcon() {
+  var icon = new PIXI.Sprite(texture);
+  icon.position.x = Math.random() * window.innerWidth;
+  icon.position.y = Math.random() * window.innerHeight;
+  icon.speedX = (Math.random() - 0.5) * 2;
+  icon.speedY = (Math.random() - 0.5) * 2;
 
-  sprite.accX = (Math.random() - 0.5) * 0.001 * accelerationFactor;
-  sprite.accY = (Math.random() - 0.5) * 0.001 * accelerationFactor;
+  icon.accX = (Math.random() - 0.5) * 0.001 * accelerationFactor;
+  icon.accY = (Math.random() - 0.5) * 0.001 * accelerationFactor;
 
-  sprite.anchor.set(0.5);
-  sprite.scale.set(0.5 + Math.random() * 0.5);
-  sprite.rotation = Math.random() - 0.5;
+  icon.anchor.set(0.5);
+  icon.scale.set(0.5 + Math.random() * 0.5);
+  icon.rotation = Math.random() - 0.5;
 
-  sprite.interactive = true;
-  sprite.buttonMode = true;
-  sprite.on("click", (_) => {
-    sprite.parent.removeChild(sprite);
-    spriteCount--;
+  icon.interactive = true;
+  icon.buttonMode = true;
+  // Remove the icon when it is clicked
+  icon.on("click", (_) => {
+    icon.parent.removeChild(icon);
+    iconCount--;
   });
 
-  sprites.push(sprite);
-  isSpriteShrinking.push(false);
+  icons.push(icon);
+  isIconShrinking.push(false);
 
   setTimeout(() => {
-    app.stage.addChild(sprite);
-  }, Math.floor(Math.random() * 1000 * spriteCount++));
+    app.stage.addChild(icon);
+  }, Math.floor(Math.random() * 1000 * iconCount++));
 }
 
-// Define movement of the sprites
-function moveSprite(sprite) {
-  sprite.position.x += sprite.speedX;
-  sprite.position.y += sprite.speedY;
-  sprite.speedX += sprite.accX;
-  sprite.speedY += sprite.accY;
-  sprite.accX += (Math.random() - 0.5) * 0.001 * accelerationFactor;
-  sprite.accY += (Math.random() - 0.5) * 0.001 * accelerationFactor;
+// Define movement of the icons
+function moveIcon(icon) {
+  icon.position.x += icon.speedX;
+  icon.position.y += icon.speedY;
+  icon.speedX += icon.accX;
+  icon.speedY += icon.accY;
+  icon.accX += (Math.random() - 0.5) * 0.001 * accelerationFactor;
+  icon.accY += (Math.random() - 0.5) * 0.001 * accelerationFactor;
 
-  if (sprite.position.x > window.innerWidth - 25) {
-    sprite.speedX *= -1;
-    sprite.position.x = window.innerWidth - 25;
-  } else if (sprite.position.x < 25) {
-    sprite.speedX *= -1;
-    sprite.position.x = 25;
+  if (icon.position.x > window.innerWidth - 25) {
+    icon.speedX *= -1;
+    icon.position.x = window.innerWidth - 25;
+  } else if (icon.position.x < 25) {
+    icon.speedX *= -1;
+    icon.position.x = 25;
   }
 
-  if (sprite.position.y > window.innerHeight - 25) {
-    sprite.speedY *= -1;
-    sprite.position.y = window.innerHeight - 25;
-    sprite.spin = (Math.random() - 0.5) * 0.2;
-  } else if (sprite.position.y < 25) {
-    sprite.speedY *= -1;
-    sprite.position.y = 25;
+  if (icon.position.y > window.innerHeight - 25) {
+    icon.speedY *= -1;
+    icon.position.y = window.innerHeight - 25;
+    icon.spin = (Math.random() - 0.5) * 0.2;
+  } else if (icon.position.y < 25) {
+    icon.speedY *= -1;
+    icon.position.y = 25;
   }
 }
 
-function changeSpriteSize(sprite, i) {
+// Define growth and shrinkage of icons
+function changeIconSize(icon, i) {
   sizeDifference = Math.random() * 0.01;
-  if (isSpriteShrinking[i]) {
-    sprite.scale.x -= sizeDifference;
-    sprite.scale.y -= sizeDifference;
+  if (isIconShrinking[i]) {
+    icon.scale.x -= sizeDifference;
+    icon.scale.y -= sizeDifference;
 
-    if (sprite.scale.x < 0.5) {
-      isSpriteShrinking[i] = false;
+    if (icon.scale.x < 0.5) {
+      isIconShrinking[i] = false;
     }
   } else {
-    sprite.scale.x += sizeDifference;
-    sprite.scale.y += sizeDifference;
+    icon.scale.x += sizeDifference;
+    icon.scale.y += sizeDifference;
 
-    if (sprite.scale.x > 1.5) {
-      isSpriteShrinking[i] = true;
+    if (icon.scale.x > 1.5) {
+      isIconShrinking[i] = true;
     }
   }
 }
