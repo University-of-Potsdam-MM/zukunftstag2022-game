@@ -58,20 +58,20 @@ function moveSprite(sprite) {
   sprite.accX += (Math.random() - 0.5) * 0.001;
   sprite.accY += (Math.random() - 0.5) * 0.001;
 
-  if (sprite.position.x > window.innerWidth - 50) {
+  if (sprite.position.x > window.innerWidth - 25) {
     sprite.speedX *= -1;
-    sprite.position.x = window.innerWidth - 50;
-  } else if (sprite.position.x < 50) {
+    sprite.position.x = window.innerWidth - 25;
+  } else if (sprite.position.x < 25) {
     sprite.speedX *= -1;
-    sprite.position.x = 50;
+    sprite.position.x = 25;
   }
 
-  if (sprite.position.y > window.innerHeight - 50) {
-    sprite.speedY *= -0.85;
-    sprite.position.y = window.innerHeight - 50;
+  if (sprite.position.y > window.innerHeight - 25) {
+    sprite.speedY *= -1;
+    sprite.position.y = window.innerHeight - 25;
     sprite.spin = (Math.random() - 0.5) * 0.2;
-  } else if (sprite.position.y < 50) {
-    sprite.speedY *= -0.85;
-    sprite.position.y = 50;
+  } else if (sprite.position.y < 25) {
+    sprite.speedY *= -1;
+    sprite.position.y = 25;
   }
 }
