@@ -1,4 +1,6 @@
+// These should be modifiable by the player
 let maxSpriteCount = 20;
+let accelerationFactor = 1;
 
 let spriteCount = 0;
 var sprites = [];
@@ -36,8 +38,8 @@ function addSprite() {
   sprite.speedX = (Math.random() - 0.5) * 2;
   sprite.speedY = (Math.random() - 0.5) * 2;
 
-  sprite.accX = (Math.random() - 0.5) * 0.001;
-  sprite.accY = (Math.random() - 0.5) * 0.001;
+  sprite.accX = (Math.random() - 0.5) * 0.001 * accelerationFactor;
+  sprite.accY = (Math.random() - 0.5) * 0.001 * accelerationFactor;
 
   sprite.anchor.set(0.5);
   sprite.scale.set(0.5 + Math.random() * 0.5);
@@ -64,8 +66,8 @@ function moveSprite(sprite) {
   sprite.position.y += sprite.speedY;
   sprite.speedX += sprite.accX;
   sprite.speedY += sprite.accY;
-  sprite.accX += (Math.random() - 0.5) * 0.001;
-  sprite.accY += (Math.random() - 0.5) * 0.001;
+  sprite.accX += (Math.random() - 0.5) * 0.001 * accelerationFactor;
+  sprite.accY += (Math.random() - 0.5) * 0.001 * accelerationFactor;
 
   if (sprite.position.x > window.innerWidth - 25) {
     sprite.speedX *= -1;
