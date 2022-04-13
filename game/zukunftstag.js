@@ -33,15 +33,22 @@ function addSprite() {
   var sprite = new PIXI.Sprite(svgTexture);
   sprite.position.x = Math.random() * window.innerWidth;
   sprite.position.y = Math.random() * window.innerHeight;
-  sprite.speedX = (Math.random() - 0.5) * 10;
-  sprite.speedY = (Math.random() - 0.5) * 10;
+  sprite.speedX = (Math.random() - 0.5) * 2;
+  sprite.speedY = (Math.random() - 0.5) * 2;
 
-  sprite.accX = (Math.random() - 0.5) * 0.1;
-  sprite.accY = (Math.random() - 0.5) * 0.1;
+  sprite.accX = (Math.random() - 0.5) * 0.001;
+  sprite.accY = (Math.random() - 0.5) * 0.001;
 
   sprite.anchor.set(0.5);
   sprite.scale.set(0.5 + Math.random() * 0.5);
   sprite.rotation = Math.random() - 0.5;
+
+  sprite.interactive = true;
+  sprite.buttonMode = true;
+  sprite.on("click", (_) => {
+    sprite.parent.removeChild(sprite);
+    spriteCount--;
+  });
 
   sprites.push(sprite);
   isSpriteShrinking.push(false);
