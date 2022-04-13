@@ -13,22 +13,42 @@ document.body.appendChild(app.view);
 let iconCount = 0;
 var icons = [];
 var isIconShrinking = [];
+let countdown = 30;
 
 // Create the texture
 let texture = new PIXI.Texture.from(iconURL);
-addNewIcon();
 
 // Add a ticker callback to move the icons
-app.ticker.add(() => {
+let ticker = PIXI.Ticker.shared;
+ticker.autoStart = false;
+ticker.add(() => {
   for (i = 0; i < icons.length; i++) {
     moveIcon(icons[i]);
     changeIconSize(icons[i], i);
   }
 
   if (iconCount < maxIconCount) {
-    addNewIcon();
+    setTimeout(() => {
+      if (ticker.started && container.children.length < maxIconCount) {
+        addNewIcon();
+      }
+    }, Math.floor(Math.random() * 1000 * iconCount++));
   }
 });
+
+startNewGame();
+
+// Resets score and starts a new game
+function startNewGame() {
+  iconCount = 0;
+  icons = [];
+  isIconShrinking = [];
+
+  container = new PIXI.Container();
+  app.stage.addChild(container);
+  addCountdownTimer();
+  ticker.start();
+}
 
 // Create a new icon with randomized properties
 function addNewIcon() {
@@ -49,16 +69,15 @@ function addNewIcon() {
   icon.buttonMode = true;
   // Remove the icon when it is clicked
   icon.on("click", (_) => {
-    icon.parent.removeChild(icon);
-    iconCount--;
+    if (ticker.started) {
+      icon.parent.removeChild(icon);
+      iconCount--;
+    }
   });
 
   icons.push(icon);
   isIconShrinking.push(false);
-
-  setTimeout(() => {
-    app.stage.addChild(icon);
-  }, Math.floor(Math.random() * 1000 * iconCount++));
+  container.addChild(icon);
 }
 
 // Define movement of the icons
@@ -106,4 +125,63 @@ function changeIconSize(icon, i) {
       isIconShrinking[i] = true;
     }
   }
+}
+
+// Add countdown timer that stops the game
+function addCountdownTimer() {
+  const txt = new PIXI.Text("Verbleibende Zeit: " + countdown, {
+    fontSize: 25,
+  });
+  txt.anchor.set(0.5);
+  container.addChild(txt);
+  txt.position.set(txt.width - 100, 15);
+
+  var seconds = countdown - 1;
+  let timer = setInterval(function () {
+    if (seconds >= 0) {
+      txt.text = "Verbleibende Zeit: " + seconds--;
+    } else {
+      // if the time is up, end the game
+      ticker.stop();
+      addGameEndOverlay();
+      clearInterval(timer);
+    }
+  }, 1000);
+}
+
+// Creates overlay saying that the time is up and a button to restart the game
+function addGameEndOverlay() {
+  const rect = new PIXI.Graphics();
+  rect
+    .beginFill(0x20214f)
+    .drawRect(0, 0, app.screen.width / 4, 200)
+    .endFill();
+  rect.position.set((app.screen.width / 8) * 3, app.screen.height / 2 - 100);
+  app.stage.addChild(rect);
+
+  const timeUp = new PIXI.Text("Zeit abgelaufen!", {
+    fontSize: 35,
+    fill: 0xffffff,
+  });
+  timeUp.anchor.set(0.5);
+  app.stage.addChild(timeUp);
+  timeUp.position.set(app.screen.width / 2, app.screen.height / 2 - 50);
+
+  const playAgain = new PIXI.Text("Neu starten", {
+    fontSize: 25,
+    fill: 0xffffff,
+  });
+  playAgain.anchor.set(0.5);
+  playAgain.interactive = true;
+  playAgain.buttonMode = true;
+  playAgain.on("click", (_) => {
+    playAgain.parent.removeChild(playAgain);
+    timeUp.parent.removeChild(timeUp);
+    rect.parent.removeChild(rect);
+    container.destroy();
+    startNewGame();
+  });
+
+  app.stage.addChild(playAgain);
+  playAgain.position.set(app.screen.width / 2, app.screen.height / 2 + 50);
 }

@@ -27,7 +27,6 @@ createServer(function (req, res) {
       }
     });
   } else {
-    console.log(req.url);
     readFile("game" + req.url, function (err, data) {
       if (err) {
         console.log(err);
