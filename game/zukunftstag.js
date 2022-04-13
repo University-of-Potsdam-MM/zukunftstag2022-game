@@ -2,6 +2,7 @@ let maxSpriteCount = 20;
 
 let spriteCount = 0;
 var sprites = [];
+var isSpriteShrinking = [];
 
 // Create the application helper and add its render target to the page
 let app = new PIXI.Application({
@@ -16,9 +17,10 @@ let svgTexture = new PIXI.Texture.from(svgUrl);
 addSprite();
 
 // Add a ticker callback to move the sprites
-app.ticker.add((delta) => {
+app.ticker.add(() => {
   for (i = 0; i < sprites.length; i++) {
     moveSprite(sprites[i]);
+    changeSpriteSize(sprites[i], i);
   }
 
   if (spriteCount < maxSpriteCount) {
@@ -37,12 +39,12 @@ function addSprite() {
   sprite.accX = (Math.random() - 0.5) * 0.1;
   sprite.accY = (Math.random() - 0.5) * 0.1;
 
-  sprite.anchor.y = 0.5;
-  sprite.anchor.x = 0.5;
+  sprite.anchor.set(0.5);
   sprite.scale.set(0.5 + Math.random() * 0.5);
   sprite.rotation = Math.random() - 0.5;
 
   sprites.push(sprite);
+  isSpriteShrinking.push(false);
 
   setTimeout(() => {
     app.stage.addChild(sprite);
@@ -73,5 +75,24 @@ function moveSprite(sprite) {
   } else if (sprite.position.y < 25) {
     sprite.speedY *= -1;
     sprite.position.y = 25;
+  }
+}
+
+function changeSpriteSize(sprite, i) {
+  sizeDifference = Math.random() * 0.01;
+  if (isSpriteShrinking[i]) {
+    sprite.scale.x -= sizeDifference;
+    sprite.scale.y -= sizeDifference;
+
+    if (sprite.scale.x < 0.5) {
+      isSpriteShrinking[i] = false;
+    }
+  } else {
+    sprite.scale.x += sizeDifference;
+    sprite.scale.y += sizeDifference;
+
+    if (sprite.scale.x > 1.5) {
+      isSpriteShrinking[i] = true;
+    }
   }
 }
