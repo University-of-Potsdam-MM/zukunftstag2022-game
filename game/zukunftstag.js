@@ -1,6 +1,7 @@
 // These should be modifiable by the player
 let maxIconCount = 20;
 let accelerationFactor = 1;
+let countdown = 30;
 let iconURL = "https://s3-us-west-2.amazonaws.com/s.cdpn.io/106114/bee.svg";
 
 // Create the application helper and add its render target to the page
@@ -13,7 +14,6 @@ document.body.appendChild(app.view);
 let iconCount = 0;
 var icons = [];
 var isIconShrinking = [];
-let countdown = 30;
 
 // Create the texture
 let texture = new PIXI.Texture.from(iconURL);
