@@ -152,11 +152,12 @@ function addCountdownTimer() {
 // Creates overlay saying that the time is up and a button to restart the game
 function addGameEndOverlay() {
   const rect = new PIXI.Graphics();
-  rect
-    .beginFill(0x20214f)
-    .drawRect(0, 0, app.screen.width / 4, 200)
-    .endFill();
-  rect.position.set((app.screen.width / 8) * 3, app.screen.height / 2 - 100);
+  const rectWidth = app.screen.width / 4 > 400 ? app.screen.width / 4 : 400;
+  rect.beginFill(0x20214f).drawRect(0, 0, rectWidth, 200).endFill();
+  rect.position.set(
+    app.screen.width / 2 - rectWidth / 2,
+    app.screen.height / 2 - 100
+  );
   app.stage.addChild(rect);
 
   const timeUp = new PIXI.Text("Zeit abgelaufen!", {
