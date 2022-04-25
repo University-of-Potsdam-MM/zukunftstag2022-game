@@ -12,6 +12,7 @@ let app = new PIXI.Application({
 document.body.appendChild(app.view);
 
 let iconCount = 0;
+let highscore = 0;
 var icons = [];
 var isIconShrinking = [];
 
@@ -41,6 +42,7 @@ startNewGame();
 // Resets score and starts a new game
 function startNewGame() {
   iconCount = 0;
+  highscore = 0;
   icons = [];
   isIconShrinking = [];
 
@@ -72,6 +74,7 @@ function addNewIcon() {
     if (ticker.started) {
       icon.parent.removeChild(icon);
       iconCount--;
+      highscore++;
     }
   });
 
@@ -168,6 +171,14 @@ function addGameEndOverlay() {
   app.stage.addChild(timeUp);
   timeUp.position.set(app.screen.width / 2, app.screen.height / 2 - 50);
 
+  const score = new PIXI.Text("Highscore: " + String(highscore), {
+    fontSize: 25,
+    fill: 0xffffff,
+  });
+  score.anchor.set(0.5);
+  app.stage.addChild(score);
+  score.position.set(app.screen.width / 2, app.screen.height / 2);
+
   const playAgain = new PIXI.Text("Neu starten", {
     fontSize: 25,
     fill: 0xffffff,
@@ -178,6 +189,7 @@ function addGameEndOverlay() {
   playAgain.on("click", (_) => {
     playAgain.parent.removeChild(playAgain);
     timeUp.parent.removeChild(timeUp);
+    score.parent.removeChild(score);
     rect.parent.removeChild(rect);
     container.destroy();
     startNewGame();
