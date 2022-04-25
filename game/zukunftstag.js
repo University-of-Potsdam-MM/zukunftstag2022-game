@@ -146,6 +146,12 @@ function addCountdownTimer() {
     } else {
       // if the time is up, end the game
       ticker.stop();
+
+      // save the score if its higher than the previous highscore
+      const highscoreUntilNow = localStorage.getItem("highscore");
+      if (!highscoreUntilNow || highscore > highscoreUntilNow) {
+        localStorage.setItem("highscore", highscore);
+      }
       addGameEndOverlay();
       clearInterval(timer);
     }
@@ -156,7 +162,7 @@ function addCountdownTimer() {
 function addGameEndOverlay() {
   const rect = new PIXI.Graphics();
   const rectWidth = app.screen.width / 4 > 400 ? app.screen.width / 4 : 400;
-  rect.beginFill(0x20214f).drawRect(0, 0, rectWidth, 200).endFill();
+  rect.beginFill(0x20214f).drawRect(0, 0, rectWidth, 300).endFill();
   rect.position.set(
     app.screen.width / 2 - rectWidth / 2,
     app.screen.height / 2 - 100
@@ -171,13 +177,35 @@ function addGameEndOverlay() {
   app.stage.addChild(timeUp);
   timeUp.position.set(app.screen.width / 2, app.screen.height / 2 - 50);
 
-  const score = new PIXI.Text("Highscore: " + String(highscore), {
+  const score = new PIXI.Text("Aktueller Score: " + String(highscore), {
     fontSize: 25,
     fill: 0xffffff,
   });
   score.anchor.set(0.5);
   app.stage.addChild(score);
   score.position.set(app.screen.width / 2, app.screen.height / 2);
+
+  const highscoreUntilNow = localStorage.getItem("highscore");
+  const highestScore = new PIXI.Text(
+    "Highscore: " + String(highscoreUntilNow),
+    {
+      fontSize: 25,
+      fill: 0xffffff,
+    }
+  );
+  highestScore.anchor.set(0.5);
+  app.stage.addChild(highestScore);
+  highestScore.position.set(app.screen.width / 2, app.screen.height / 2 + 50);
+
+  if (highscore > highscoreUntilNow) {
+    const newRecord = new PIXI.Text("Neuer Rekord!", {
+      fontSize: 25,
+      fill: 0x19e619,
+    });
+    newRecord.anchor.set(0.5);
+    app.stage.addChild(newRecord);
+    newRecord.position.set(app.screen.width / 2, app.screen.height / 2 + 100);
+  }
 
   const playAgain = new PIXI.Text("Neu starten", {
     fontSize: 25,
@@ -190,11 +218,15 @@ function addGameEndOverlay() {
     playAgain.parent.removeChild(playAgain);
     timeUp.parent.removeChild(timeUp);
     score.parent.removeChild(score);
+    highestScore.parent.removeChild(highestScore);
+    if (highscore > highscoreUntilNow) {
+      newRecord.parent.removeChild(newRecord);
+    }
     rect.parent.removeChild(rect);
     container.destroy();
     startNewGame();
   });
 
   app.stage.addChild(playAgain);
-  playAgain.position.set(app.screen.width / 2, app.screen.height / 2 + 50);
+  playAgain.position.set(app.screen.width / 2, app.screen.height / 2 + 150);
 }
