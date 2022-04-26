@@ -182,7 +182,7 @@ function addCountdownTimer() {
     }, 1000);
 }
 
-function createPlayAgainButton(timeUp, rect, text) {
+function createPlayAgainButton(rect, text) {
     const fontSize = 25;
     const playAgain = new PIXI.Text(text, {
         fontSize: fontSize,
@@ -192,10 +192,7 @@ function createPlayAgainButton(timeUp, rect, text) {
     playAgain.interactive = true;
     playAgain.buttonMode = true;
     playAgain.on("click", (_) => {
-        playAgain.parent.removeChild(playAgain);
-        timeUp.parent.removeChild(timeUp);
-        rect.parent.removeChild(rect);
-        container.destroy();
+        clearExistingOverlays();
         overlayIsOpen = false;
         startNewGame();
     });
@@ -229,7 +226,7 @@ function addGameEndOverlay() {
     app.stage.addChild(timeUp);
     timeUp.position.set(app.screen.width / 2, app.screen.height / 2 - 50);
 
-    createPlayAgainButton(timeUp, rect, "Neu starten");
+    createPlayAgainButton(rect, "Neu starten");
 }
 
 function createSettingsOverlay() {
@@ -258,7 +255,7 @@ function createSettingsOverlay() {
     configDialogTitle.anchor.set(0.5);
     rect.addChild(configDialogTitle);
     configDialogTitle.position.set(rect.width / 2, fontSize);
-    createPlayAgainButton(configDialogTitle, rect, "Spiel starten");
+    createPlayAgainButton(rect, "Spiel starten");
 
     for (let i = 0; i < textures.length; i++) {
         const row = new PIXI.Graphics();
