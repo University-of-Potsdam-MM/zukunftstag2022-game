@@ -1,5 +1,5 @@
-import { createServer } from "http";
 import { readFile } from "fs";
+import { createServer } from "http";
 
 createServer(function (req, res) {
   if (req.url === "/") {
@@ -34,6 +34,12 @@ createServer(function (req, res) {
         if (req.url.indexOf(".js") > 0) {
           res.writeHead(200, {
             "Content-Type": "application/javascript",
+          });
+        }
+
+        if (req.url.indexOf(".svg") > 0) {
+          res.writeHead(200, {
+            "Content-Type": "image/svg+xml",
           });
         }
         res.write(data);
