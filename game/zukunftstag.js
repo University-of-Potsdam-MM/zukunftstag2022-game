@@ -28,6 +28,7 @@ let textures = [new PIXI.Texture.from('/icons/bee.svg'), new PIXI.Texture.from('
 const settings_icon = new PIXI.Texture.from('/icons/settings.svg')
 
 let timer;
+let overlayIsOpen = false;
 // Add a ticker callback to move the icons
 let ticker = PIXI.Ticker.shared;
 ticker.autoStart = false;
@@ -195,6 +196,7 @@ function createPlayAgainButton(timeUp, rect, text) {
         timeUp.parent.removeChild(timeUp);
         rect.parent.removeChild(rect);
         container.destroy();
+        overlayIsOpen = false;
         startNewGame();
     });
 
@@ -205,6 +207,11 @@ function createPlayAgainButton(timeUp, rect, text) {
 
 // Creates overlay saying that the time is up and a button to restart the game
 function addGameEndOverlay() {
+    if (overlayIsOpen) {
+        clearExistingOverlays();
+    }
+
+    overlayIsOpen = true;
     const rect = new PIXI.Graphics();
     const rectWidth = app.screen.width / 4 > 400 ? app.screen.width / 4 : 400;
     rect.beginFill(color1).drawRect(0, 0, rectWidth, 200).endFill();
@@ -226,11 +233,16 @@ function addGameEndOverlay() {
 }
 
 function createSettingsOverlay() {
+    if (overlayIsOpen) {
+        clearExistingOverlays();
+    }
+
+    overlayIsOpen = true;
     ticker.stop();
     clearInterval(timer);
     const rect = new PIXI.Graphics();
     const rectWidth = app.screen.width > 400 ? app.screen.width : 400;
-    const rectHeight = app.screen.height - 100;
+    const rectHeight = app.screen.height;
     rect.beginFill(color1).drawRect(0, 0, rectWidth, rectHeight).endFill();
     rect.position.set(
         app.screen.width / 2 - rectWidth / 2,
@@ -262,4 +274,8 @@ function createSettingsOverlay() {
         icon.x = 0;
         icon.y = i * 64;
     }
+}
+
+function clearExistingOverlays() {
+    app.stage.removeChildren();
 }
