@@ -1,13 +1,13 @@
 // These should be modifiable by the player
-let maxIconCount = 20;
+let maxIconCount = 30;
 let accelerationFactor = 1;
 let countdown = 30;
 
 const color1 = 0x03045e;
-const color2 = 0x0077b6;
-const color3 = 0x0096c7;
+const color2 = 0xf3e03b;
+const color3 = 0x1919e6;
 
-const tableColors = [color2, color3]
+const tableColors = [color2, color3];
 const white = 0xffffff;
 const color_header = 0xcaf0f8;
 
@@ -47,15 +47,15 @@ ticker.add(() => {
     }
 });
 
-startNewGame();
+createSettingsOverlay();
 
 function createSettingSpirit() {
     const settingsSprite = new PIXI.Sprite(settings_icon);
     settingsSprite.scale.x *= .02;
     settingsSprite.scale.y *= .02;
     settingsSprite.anchor.set(1.0, 0);
-    settingsSprite.x = window.innerWidth - 30;
-    settingsSprite.y = 0;
+    settingsSprite.x = window.innerWidth - 15;
+    settingsSprite.y = 15;
     // Opt-in to interactivity
     settingsSprite.interactive = true;
 
@@ -81,7 +81,7 @@ function startNewGame() {
 
 // Create a new icon with randomized properties
 function addNewIcon() {
-    const randomNumber = Math.min(Math.round(Math.random() * textures.length - 1), textures.length - 1)
+    const randomNumber = getRandomInt(0, textures.length);
     const icon = new PIXI.Sprite(textures[randomNumber]);
     icon.position.x = Math.random() * window.innerWidth;
     icon.position.y = Math.random() * window.innerHeight;
@@ -102,12 +102,24 @@ function addNewIcon() {
         if (ticker.started) {
             icon.parent.removeChild(icon);
             iconCount--;
+            gameStatus = localStorage.getItem("gameStatus").split(',').map(Number);
+            if (gameStatus[randomNumber] === 0) {
+                console.log("Minuspunkt");
+            } else {
+                console.log("Pluspunkt");
+            }
         }
     });
 
     icons.push(icon);
     isIconShrinking.push(false);
     container.addChild(icon);
+}
+
+function getRandomInt(min, max) {
+  min = Math.ceil(min);
+  max = Math.floor(max);
+  return Math.floor(Math.random() * (max - min)) + min;
 }
 
 // Define movement of the icons
@@ -162,9 +174,9 @@ function addCountdownTimer() {
     const txt = new PIXI.Text("Verbleibende Zeit: " + countdown, {
         fontSize: 25,
     });
-    txt.anchor.set(0.5);
+    txt.anchor.set(0, 0);
     container.addChild(txt);
-    txt.position.set(txt.width - 100, 15);
+    txt.position.set(15, 15);
 
     var seconds = countdown - 1;
     timer = setInterval(function () {
@@ -188,7 +200,7 @@ function createPlayAgainButton(rect, text) {
         fontSize: fontSize,
         fill: color_header,
     });
-    playAgain.anchor.set(0.5);
+    playAgain.anchor.set(1, 0);
     playAgain.interactive = true;
     playAgain.buttonMode = true;
     playAgain.on("click", (_) => {
@@ -198,7 +210,7 @@ function createPlayAgainButton(rect, text) {
     });
 
     rect.addChild(playAgain);
-    playAgain.position.set(rect.width / 2 - fontSize, rect.height - (2 * fontSize));
+    playAgain.position.set(rect.width / 2, rect.height - (2 * fontSize));
     return playAgain;
 }
 
@@ -238,8 +250,8 @@ function createSettingsOverlay() {
     ticker.stop();
     clearInterval(timer);
     const rect = new PIXI.Graphics();
-    const rectWidth = app.screen.width > 400 ? app.screen.width : 400;
-    const rectHeight = app.screen.height;
+    const rectWidth = app.screen.width > 400 ? app.screen.width / 2 : 400;
+    const rectHeight = app.screen.height / 2;
     rect.beginFill(color1).drawRect(0, 0, rectWidth, rectHeight).endFill();
     rect.position.set(
         app.screen.width / 2 - rectWidth / 2,
@@ -248,29 +260,63 @@ function createSettingsOverlay() {
     app.stage.addChild(rect);
 
     let fontSize = 35;
-    const configDialogTitle = new PIXI.Text("Konfiguration der Elemente", {
+    const configDialogTitle = new PIXI.Text("Spieleinstellungen", {
         fontSize: fontSize,
         fill: color_header,
     });
-    configDialogTitle.anchor.set(0.5);
+    configDialogTitle.anchor.set(1, 0);
     rect.addChild(configDialogTitle);
     configDialogTitle.position.set(rect.width / 2, fontSize);
     createPlayAgainButton(rect, "Spiel starten");
 
+    const gameStatusDict = {
+        0: "Leben lassen",
+        1: "Abschießen"
+    }
+
+    savedGameStatus = localStorage.getItem("gameStatus");
+    let gameStatus = savedGameStatus ? savedGameStatus.split(',').map(Number) : [];
+
     for (let i = 0; i < textures.length; i++) {
         const row = new PIXI.Graphics();
-        row.beginFill(tableColors[i % 2]).drawRect(0, i * 64, rectWidth, 64).endFill();
+        const xPosition = (i+1) * 192;
+        const yPosition = 128;
+
+        if (i > (gameStatus.length-1)) {
+            gameStatus[i] = i % 2;
+        }
+
+        row.beginFill(tableColors[gameStatus[i]]).drawRect(xPosition, yPosition, 128, 128).endFill();
         row.position.set(
-            rect.x,
+            0,
             80
         );
+
+        let rowText = new PIXI.Text(gameStatusDict[gameStatus[i]], {
+            fontSize: 20,
+            fill: color_header
+        });
+        rowText.anchor.set(0.5);
+        row.addChild(rowText);
+        rowText.position.set(xPosition + 64, yPosition + 156);
+
+        row.interactive = true;
+        row.buttonMode = true;
+        row.on("click", (_) => {
+            gameStatus[i] = (gameStatus[i]+1) >= tableColors.length ? 0 : (gameStatus[i]+1);
+            rowText.text = gameStatusDict[gameStatus[i]];
+            localStorage.setItem("gameStatus", gameStatus);
+            row.beginFill(tableColors[gameStatus[i]]).drawRect(xPosition, yPosition, 128, 128).endFill();
+        });
+
         rect.addChild(row);
         const icon = new PIXI.Sprite(textures[i]);
-        row.addChild(icon)
-        icon.anchor.set(0, 0)
-        icon.x = 0;
-        icon.y = i * 64;
+        row.addChild(icon);
+        icon.x = xPosition + 25;
+        icon.y = yPosition + 25;
     }
+
+    localStorage.setItem("gameStatus", gameStatus);
 }
 
 function clearExistingOverlays() {
