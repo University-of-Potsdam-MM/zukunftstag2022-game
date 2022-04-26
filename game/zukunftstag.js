@@ -27,7 +27,7 @@ let isIconShrinking = [];
 let textures = [new PIXI.Texture.from('/icons/bee.svg'), new PIXI.Texture.from('/icons/cat.svg')];
 const settings_icon = new PIXI.Texture.from('/icons/settings.svg')
 
-
+let timer;
 // Add a ticker callback to move the icons
 let ticker = PIXI.Ticker.shared;
 ticker.autoStart = false;
@@ -166,7 +166,7 @@ function addCountdownTimer() {
     txt.position.set(txt.width - 100, 15);
 
     var seconds = countdown - 1;
-    let timer = setInterval(function () {
+    timer = setInterval(function () {
         if (!ticker.started) {
             return;
         }
@@ -199,7 +199,7 @@ function createPlayAgainButton(timeUp, rect, text) {
     });
 
     rect.addChild(playAgain);
-    playAgain.position.set(rect.width / 2, rect.height - (2 * fontSize));
+    playAgain.position.set(rect.width / 2 - fontSize, rect.height - (2 * fontSize));
     return playAgain;
 }
 
@@ -227,6 +227,7 @@ function addGameEndOverlay() {
 
 function createSettingsOverlay() {
     ticker.stop();
+    clearInterval(timer);
     const rect = new PIXI.Graphics();
     const rectWidth = app.screen.width > 400 ? app.screen.width : 400;
     const rectHeight = app.screen.height - 100;
