@@ -194,6 +194,7 @@ function addCountdownTimer() {
     const txt = new PIXI.Text("Verbleibende Zeit: " + countdown, {
         fontSize: 25,
     });
+    txt.resolution = 2;
     txt.anchor.set(0, 0);
     container.addChild(txt);
     txt.position.set(15, 15);
@@ -220,6 +221,7 @@ function createPlayAgainButton(rect, text) {
         fontSize: fontSize,
         fill: color_header,
     });
+    playAgain.resolution = 2;
     playAgain.anchor.set(1, 0);
     playAgain.interactive = true;
     playAgain.buttonMode = true;
@@ -254,6 +256,7 @@ function addGameEndOverlay() {
         fontSize: 35,
         fill: color_header,
     });
+    timeUp.resolution = 2;
     timeUp.anchor.set(0.5);
     app.stage.addChild(timeUp);
     timeUp.position.set(app.screen.width / 2, app.screen.height / 2 - 50);
@@ -284,6 +287,7 @@ function createSettingsOverlay() {
         fontSize: fontSize,
         fill: color_header,
     });
+    configDialogTitle.resolution = 2;
     configDialogTitle.anchor.set(1, 0);
     rect.addChild(configDialogTitle);
     configDialogTitle.position.set(rect.width / 2, fontSize);
@@ -316,6 +320,7 @@ function createSettingsOverlay() {
             fontSize: 20,
             fill: color_header
         });
+        rowText.resolution = 2;
         rowText.anchor.set(0.5);
         row.addChild(rowText);
         rowText.position.set(xPosition, yPosition + 72);
