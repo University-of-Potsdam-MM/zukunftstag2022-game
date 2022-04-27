@@ -274,7 +274,7 @@ function createSettingsOverlay() {
     clearInterval(timer);
     const rect = new PIXI.Graphics();
     const rectWidth = app.screen.width;
-    const rectHeight = app.screen.height / 2;
+    const rectHeight = 350;
     rect.beginFill(color1).drawRect(0, 0, rectWidth, rectHeight).endFill();
     rect.position.set(
         app.screen.width / 2 - rectWidth / 2,
@@ -303,7 +303,7 @@ function createSettingsOverlay() {
 
     for (let i = 0; i < textures.length; i++) {
         const row = new PIXI.Graphics();
-        const xPosition = (i+1) * 128;
+        const xPosition = app.screen.width / 2 - (textures.length*64) + (i+1) * 128 - (64);
         const yPosition = 64;
 
         if (i > (gameStatus.length-1)) {
@@ -313,7 +313,7 @@ function createSettingsOverlay() {
         row.beginFill(tableColors[gameStatus[i]]).drawCircle(xPosition, yPosition, 48).endFill();
         row.position.set(
             0,
-            80
+            100
         );
 
         let rowText = new PIXI.Text(gameStatusDict[gameStatus[i]], {
