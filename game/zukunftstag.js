@@ -27,6 +27,7 @@ document.body.appendChild(app.view);
 let iconCount = 0;
 let icons = [];
 let isIconShrinking = [];
+let distribution = [];
 
 const settings_icon = new PIXI.Texture.from('/icons/settings.svg')
 
@@ -90,6 +91,7 @@ function startNewGame() {
     iconCount = 0;
     icons = [];
     isIconShrinking = [];
+    distribution = createDistribution(textures);
 
     container = new PIXI.Container();
     app.stage.addChild(container);
@@ -101,7 +103,7 @@ function startNewGame() {
 
 // Create a new icon with randomized properties
 function addNewIcon() {
-    const randomNumber = getRandomInt(0, textures.length);
+    const randomNumber = randomIndex(distribution);
     const icon = new PIXI.Sprite(textures[randomNumber]);
     icon.position.x = Math.random() * window.innerWidth;
     icon.position.y = Math.random() * window.innerHeight;
@@ -122,24 +124,12 @@ function addNewIcon() {
         if (ticker.started) {
             icon.parent.removeChild(icon);
             iconCount--;
-            gameStatus = localStorage.getItem("gameStatus").split(',').map(Number);
-            if (gameStatus[randomNumber] === 0) {
-                console.log("Minuspunkt");
-            } else {
-                console.log("Pluspunkt");
-            }
         }
     });
 
     icons.push(icon);
     isIconShrinking.push(false);
     container.addChild(icon);
-}
-
-function getRandomInt(min, max) {
-  min = Math.ceil(min);
-  max = Math.floor(max);
-  return Math.floor(Math.random() * (max - min)) + min;
 }
 
 // Define movement of the icons
@@ -330,7 +320,7 @@ function createSettingsOverlay() {
         row.on("click", (_) => {
             gameStatus[i] = (gameStatus[i]+1) >= tableColors.length ? 0 : (gameStatus[i]+1);
             rowText.text = gameStatusDict[gameStatus[i]];
-            localStorage.setItem("gameStatus", gameStatus);
+            saveGameStatus(gameStatus);
             row.beginFill(tableColors[gameStatus[i]]).drawCircle(xPosition, yPosition, 48).endFill();
         });
 
@@ -341,7 +331,15 @@ function createSettingsOverlay() {
         icon.position.set(xPosition, yPosition);
     }
 
-    localStorage.setItem("gameStatus", gameStatus);
+    saveGameStatus(gameStatus);
+}
+
+function saveGameStatus(gameStatus) {
+  if (gameStatus.length > textures.length) {
+    gameStatus = gameStatus.slice(0, textures.length);
+  }
+
+  localStorage.setItem("gameStatus", gameStatus);
 }
 
 function clearExistingOverlays() {
@@ -353,3 +351,38 @@ async function fetchAsync (url) {
   let data = await response.text();
   return data;
 }
+
+function createDistribution(array) {
+  // Creates a distribution so that shoot target spawn more often
+  const probabilityShootTargets = 0.7;
+  const probabilityPeaceTargets = 1 - probabilityShootTargets;
+
+  let weights = [];
+  const gameStatus = localStorage.getItem("gameStatus").split(',').map(Number);
+  const counts = {};
+  gameStatus.forEach(function (x) { counts[x] = (counts[x] || 0) + 1; });
+
+  for (i = 0; i < array.length; i++) {
+    if (gameStatus[i] === 0) {
+      weights.push(probabilityPeaceTargets/counts[0]);
+    } else {
+      weights.push(probabilityShootTargets/counts[1]);
+    }
+  }
+
+  const distribution = [];
+  const sum = weights.reduce((a, b) => a + b);
+  const quant = 100 / sum;
+  for (let i = 0; i < array.length; ++i) {
+      const limit = quant * weights[i];
+      for (let j = 0; j < limit; ++j) {
+          distribution.push(i);
+      }
+  }
+  return distribution;
+};
+
+const randomIndex = (distribution) => {
+  const index = Math.floor(distribution.length * Math.random());
+  return distribution[index];
+};
