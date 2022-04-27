@@ -212,6 +212,7 @@ function addCountdownTimer() {
         } else {
             // if the time is up, end the game
             ticker.stop();
+            addGameEndOverlay();
 
             // save the score if its higher than the previous highscore
             const highscoreUntilNow = localStorage.getItem("highscore");
@@ -219,7 +220,6 @@ function addCountdownTimer() {
               localStorage.setItem("highscore", highscore);
             }
 
-            addGameEndOverlay();
             clearInterval(timer);
         }
     }, 1000);
@@ -278,8 +278,9 @@ function addGameEndOverlay() {
     score.position.set(app.screen.width / 2, app.screen.height / 2);
 
     const highscoreUntilNow = localStorage.getItem("highscore");
+    const highestNumber = highscore > highscoreUntilNow ? highscore : highscoreUntilNow;
     const highestScore = new PIXI.Text(
-      "Highscore: " + String(highscoreUntilNow),
+      "Highscore: " + String(highestNumber),
       {
         fontSize: 25,
         fill: 0xffffff,
