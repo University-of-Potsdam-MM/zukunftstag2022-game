@@ -28,12 +28,6 @@ let iconCount = 0;
 let icons = [];
 let isIconShrinking = [];
 
-// Create the texture
-let textures = [];
-for (let i in texturePaths) {
-  textures.push(new PIXI.Texture.from(new PIXI.SVGResource(texturePaths[i], { height: 64 })));
-}
-
 const settings_icon = new PIXI.Texture.from('/icons/settings.svg')
 
 let timer;
@@ -56,7 +50,24 @@ ticker.add(() => {
     }
 });
 
-createSettingsOverlay();
+// Load the textures
+let textures = [];
+for (let i in texturePaths) {
+
+  fetchAsync(texturePaths[i]).then(svgAsString => {
+    // Make white elements transparent
+    const svgWithTransparency = svgAsString.replaceAll('fill="#FFFFFF"', 'fill="#FFFFFF" fill-opacity="0.0"');
+
+    // Encode string as base64 svg, so that PIXI.SVGResource can load it
+    const b64string = "data:image/svg+xml;base64," + btoa(unescape(encodeURIComponent(svgWithTransparency)));
+    textures.push(PIXI.Texture.from(new PIXI.SVGResource(b64string, { height: 64 })));
+
+    // Start the game if all textures have been loaded
+    if (Number(i) === (texturePaths.length - 1)) {
+      createSettingsOverlay();
+    }
+  });
+}
 
 function createSettingSpirit() {
     const settingsSprite = new PIXI.Sprite(settings_icon);
@@ -330,4 +341,10 @@ function createSettingsOverlay() {
 
 function clearExistingOverlays() {
     app.stage.removeChildren();
+}
+
+async function fetchAsync (url) {
+  let response = await fetch(url);
+  let data = await response.text();
+  return data;
 }
