@@ -1,8 +1,14 @@
-// These should be modifiable by the player
+const texturePaths = [
+  '/icons/bee.svg',
+  '/icons/cat.svg',
+  '/icons/test.svg',
+];
+
+// Modify these to create more icons or make them move faster/slower
 let maxIconCount = 30;
 let accelerationFactor = 1;
-let countdown = 30;
 
+let countdown = 30;
 const color1 = 0x03045e;
 const color2 = 0xf3e03b;
 const color3 = 0x1919e6;
@@ -10,7 +16,6 @@ const color3 = 0x1919e6;
 const tableColors = [color2, color3];
 const white = 0xffffff;
 const color_header = 0xcaf0f8;
-
 
 // Create the application helper and add its render target to the page
 let app = new PIXI.Application({
@@ -24,8 +29,6 @@ let highscore = 0;
 let icons = [];
 let isIconShrinking = [];
 
-// Create the texture
-let textures = [new PIXI.Texture.from('/icons/bee.svg'), new PIXI.Texture.from('/icons/cat.svg')];
 const settings_icon = new PIXI.Texture.from('/icons/settings.svg')
 
 let timer;
@@ -48,7 +51,24 @@ ticker.add(() => {
     }
 });
 
-createSettingsOverlay();
+// Load the textures
+let textures = [];
+for (let i in texturePaths) {
+
+  fetchAsync(texturePaths[i]).then(svgAsString => {
+    // Make white elements transparent
+    const svgWithTransparency = svgAsString.replaceAll('fill="#FFFFFF"', 'fill="#FFFFFF" fill-opacity="0.0"');
+
+    // Encode string as base64 svg, so that PIXI.SVGResource can load it
+    const b64string = "data:image/svg+xml;base64," + btoa(unescape(encodeURIComponent(svgWithTransparency)));
+    textures.push(PIXI.Texture.from(new PIXI.SVGResource(b64string, { height: 64 })));
+
+    // Start the game if all textures have been loaded
+    if (Number(i) === (texturePaths.length - 1)) {
+      createSettingsOverlay();
+    }
+  });
+}
 
 function createSettingSpirit() {
     const settingsSprite = new PIXI.Sprite(settings_icon);
@@ -362,4 +382,10 @@ function createSettingsOverlay() {
 
 function clearExistingOverlays() {
     app.stage.removeChildren();
+}
+
+async function fetchAsync (url) {
+  let response = await fetch(url);
+  let data = await response.text();
+  return data;
 }
