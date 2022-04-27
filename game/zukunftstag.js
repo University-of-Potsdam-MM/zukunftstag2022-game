@@ -28,6 +28,7 @@ let iconCount = 0;
 let highscore = 0;
 let icons = [];
 let isIconShrinking = [];
+let distribution = [];
 
 const settings_icon = new PIXI.Texture.from('/icons/settings.svg')
 
@@ -92,6 +93,7 @@ function startNewGame() {
     highscore = 0;
     icons = [];
     isIconShrinking = [];
+    distribution = createDistribution(textures);
 
     container = new PIXI.Container();
     app.stage.addChild(container);
@@ -103,7 +105,7 @@ function startNewGame() {
 
 // Create a new icon with randomized properties
 function addNewIcon() {
-    const randomNumber = getRandomInt(0, textures.length);
+    const randomNumber = randomIndex(distribution);
     const icon = new PIXI.Sprite(textures[randomNumber]);
     icon.position.x = Math.random() * window.innerWidth;
     icon.position.y = Math.random() * window.innerHeight;
@@ -126,10 +128,8 @@ function addNewIcon() {
             iconCount--;
             gameStatus = localStorage.getItem("gameStatus").split(',').map(Number);
             if (gameStatus[randomNumber] === 0) {
-                console.log("Minuspunkt");
                 highscore--;
             } else {
-                console.log("Pluspunkt");
                 highscore++;
             }
         }
@@ -138,12 +138,6 @@ function addNewIcon() {
     icons.push(icon);
     isIconShrinking.push(false);
     container.addChild(icon);
-}
-
-function getRandomInt(min, max) {
-  min = Math.ceil(min);
-  max = Math.floor(max);
-  return Math.floor(Math.random() * (max - min)) + min;
 }
 
 // Define movement of the icons
@@ -319,7 +313,7 @@ function createSettingsOverlay() {
     clearInterval(timer);
     const rect = new PIXI.Graphics();
     const rectWidth = app.screen.width;
-    const rectHeight = app.screen.height / 2;
+    const rectHeight = 350;
     rect.beginFill(color1).drawRect(0, 0, rectWidth, rectHeight).endFill();
     rect.position.set(
         app.screen.width / 2 - rectWidth / 2,
@@ -348,7 +342,7 @@ function createSettingsOverlay() {
 
     for (let i = 0; i < textures.length; i++) {
         const row = new PIXI.Graphics();
-        const xPosition = (i+1) * 128;
+        const xPosition = app.screen.width / 2 - (textures.length*64) + (i+1) * 128 - (64);
         const yPosition = 64;
 
         if (i > (gameStatus.length-1)) {
@@ -358,7 +352,7 @@ function createSettingsOverlay() {
         row.beginFill(tableColors[gameStatus[i]]).drawCircle(xPosition, yPosition, 48).endFill();
         row.position.set(
             0,
-            80
+            100
         );
 
         let rowText = new PIXI.Text(gameStatusDict[gameStatus[i]], {
@@ -375,7 +369,7 @@ function createSettingsOverlay() {
         row.on("click", (_) => {
             gameStatus[i] = (gameStatus[i]+1) >= tableColors.length ? 0 : (gameStatus[i]+1);
             rowText.text = gameStatusDict[gameStatus[i]];
-            localStorage.setItem("gameStatus", gameStatus);
+            saveGameStatus(gameStatus);
             row.beginFill(tableColors[gameStatus[i]]).drawCircle(xPosition, yPosition, 48).endFill();
         });
 
@@ -386,7 +380,15 @@ function createSettingsOverlay() {
         icon.position.set(xPosition, yPosition);
     }
 
-    localStorage.setItem("gameStatus", gameStatus);
+    saveGameStatus(gameStatus);
+}
+
+function saveGameStatus(gameStatus) {
+  if (gameStatus.length > textures.length) {
+    gameStatus = gameStatus.slice(0, textures.length);
+  }
+
+  localStorage.setItem("gameStatus", gameStatus);
 }
 
 function clearExistingOverlays() {
@@ -398,3 +400,38 @@ async function fetchAsync (url) {
   let data = await response.text();
   return data;
 }
+
+function createDistribution(array) {
+  // Creates a distribution so that shoot target spawn more often
+  const probabilityShootTargets = 0.7;
+  const probabilityPeaceTargets = 1 - probabilityShootTargets;
+
+  let weights = [];
+  const gameStatus = localStorage.getItem("gameStatus").split(',').map(Number);
+  const counts = {};
+  gameStatus.forEach(function (x) { counts[x] = (counts[x] || 0) + 1; });
+
+  for (i = 0; i < array.length; i++) {
+    if (gameStatus[i] === 0) {
+      weights.push(probabilityPeaceTargets/counts[0]);
+    } else {
+      weights.push(probabilityShootTargets/counts[1]);
+    }
+  }
+
+  const distribution = [];
+  const sum = weights.reduce((a, b) => a + b);
+  const quant = 100 / sum;
+  for (let i = 0; i < array.length; ++i) {
+      const limit = quant * weights[i];
+      for (let j = 0; j < limit; ++j) {
+          distribution.push(i);
+      }
+  }
+  return distribution;
+};
+
+const randomIndex = (distribution) => {
+  const index = Math.floor(distribution.length * Math.random());
+  return distribution[index];
+};
