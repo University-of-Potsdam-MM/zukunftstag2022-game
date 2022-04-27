@@ -9,9 +9,9 @@ let maxIconCount = 30;
 let accelerationFactor = 1;
 
 let countdown = 30;
-const color1 = 0x03045e;
-const color2 = 0xf3e03b;
-const color3 = 0x1919e6;
+const color1 = 0x283d58;
+const color2 = 0x1c542d;
+const color3 = 0x8d1d2c;
 
 const tableColors = [color2, color3];
 const white = 0xffffff;
@@ -198,6 +198,7 @@ function addCountdownTimer() {
     const txt = new PIXI.Text("Verbleibende Zeit: " + countdown, {
         fontSize: 25,
     });
+    txt.resolution = 2;
     txt.anchor.set(0, 0);
     container.addChild(txt);
     txt.position.set(15, 15);
@@ -231,6 +232,7 @@ function createPlayAgainButton(rect, text) {
         fontSize: fontSize,
         fill: color_header,
     });
+    playAgain.resolution = 2;
     playAgain.anchor.set(1, 0);
     playAgain.interactive = true;
     playAgain.buttonMode = true;
@@ -253,7 +255,7 @@ function addGameEndOverlay() {
 
     overlayIsOpen = true;
     const rect = new PIXI.Graphics();
-    const rectWidth = app.screen.width / 4 > 400 ? app.screen.width / 4 : 400;
+    const rectWidth = app.screen.width;
     rect.beginFill(color1).drawRect(0, 0, rectWidth, 300).endFill();
     rect.position.set(
         app.screen.width / 2 - rectWidth / 2,
@@ -265,6 +267,7 @@ function addGameEndOverlay() {
         fontSize: 35,
         fill: color_header,
     });
+    timeUp.resolution = 2;
     timeUp.anchor.set(0.5);
     app.stage.addChild(timeUp);
     timeUp.position.set(app.screen.width / 2, app.screen.height / 2 - 50);
@@ -273,6 +276,7 @@ function addGameEndOverlay() {
       fontSize: 25,
       fill: 0xffffff,
     });
+    score.resolution = 2;
     score.anchor.set(0.5);
     app.stage.addChild(score);
     score.position.set(app.screen.width / 2, app.screen.height / 2);
@@ -286,6 +290,7 @@ function addGameEndOverlay() {
         fill: 0xffffff,
       }
     );
+    highestScore.resolution = 2;
     highestScore.anchor.set(0.5);
     app.stage.addChild(highestScore);
     highestScore.position.set(app.screen.width / 2, app.screen.height / 2 + 50);
@@ -295,6 +300,7 @@ function addGameEndOverlay() {
         fontSize: 25,
         fill: 0x19e619,
       });
+      newRecord.resolution = 2;
       newRecord.anchor.set(0.5);
       app.stage.addChild(newRecord);
       newRecord.position.set(app.screen.width / 2, app.screen.height / 2 + 100);
@@ -312,7 +318,7 @@ function createSettingsOverlay() {
     ticker.stop();
     clearInterval(timer);
     const rect = new PIXI.Graphics();
-    const rectWidth = app.screen.width > 400 ? app.screen.width / 2 : 400;
+    const rectWidth = app.screen.width;
     const rectHeight = app.screen.height / 2;
     rect.beginFill(color1).drawRect(0, 0, rectWidth, rectHeight).endFill();
     rect.position.set(
@@ -326,6 +332,7 @@ function createSettingsOverlay() {
         fontSize: fontSize,
         fill: color_header,
     });
+    configDialogTitle.resolution = 2;
     configDialogTitle.anchor.set(1, 0);
     rect.addChild(configDialogTitle);
     configDialogTitle.position.set(rect.width / 2, fontSize);
@@ -341,14 +348,14 @@ function createSettingsOverlay() {
 
     for (let i = 0; i < textures.length; i++) {
         const row = new PIXI.Graphics();
-        const xPosition = (i+1) * 192;
-        const yPosition = 128;
+        const xPosition = (i+1) * 128;
+        const yPosition = 64;
 
         if (i > (gameStatus.length-1)) {
             gameStatus[i] = i % 2;
         }
 
-        row.beginFill(tableColors[gameStatus[i]]).drawRect(xPosition, yPosition, 128, 128).endFill();
+        row.beginFill(tableColors[gameStatus[i]]).drawCircle(xPosition, yPosition, 48).endFill();
         row.position.set(
             0,
             80
@@ -358,9 +365,10 @@ function createSettingsOverlay() {
             fontSize: 20,
             fill: color_header
         });
+        rowText.resolution = 2;
         rowText.anchor.set(0.5);
         row.addChild(rowText);
-        rowText.position.set(xPosition + 64, yPosition + 156);
+        rowText.position.set(xPosition, yPosition + 72);
 
         row.interactive = true;
         row.buttonMode = true;
@@ -368,14 +376,14 @@ function createSettingsOverlay() {
             gameStatus[i] = (gameStatus[i]+1) >= tableColors.length ? 0 : (gameStatus[i]+1);
             rowText.text = gameStatusDict[gameStatus[i]];
             localStorage.setItem("gameStatus", gameStatus);
-            row.beginFill(tableColors[gameStatus[i]]).drawRect(xPosition, yPosition, 128, 128).endFill();
+            row.beginFill(tableColors[gameStatus[i]]).drawCircle(xPosition, yPosition, 48).endFill();
         });
 
         rect.addChild(row);
         const icon = new PIXI.Sprite(textures[i]);
         row.addChild(icon);
-        icon.x = xPosition + 25;
-        icon.y = yPosition + 25;
+        icon.anchor.set(0.5);
+        icon.position.set(xPosition, yPosition);
     }
 
     localStorage.setItem("gameStatus", gameStatus);
