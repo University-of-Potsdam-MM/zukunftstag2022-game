@@ -9,9 +9,9 @@ let maxIconCount = 30;
 let accelerationFactor = 1;
 
 let countdown = 30;
-const color1 = 0x03045e;
-const color2 = 0xf3e03b;
-const color3 = 0x1919e6;
+const color1 = 0x283d58;
+const color2 = 0x1c542d;
+const color3 = 0x8d1d2c;
 
 const tableColors = [color2, color3];
 const white = 0xffffff;
@@ -242,7 +242,7 @@ function addGameEndOverlay() {
 
     overlayIsOpen = true;
     const rect = new PIXI.Graphics();
-    const rectWidth = app.screen.width / 4 > 400 ? app.screen.width / 4 : 400;
+    const rectWidth = app.screen.width;
     rect.beginFill(color1).drawRect(0, 0, rectWidth, 200).endFill();
     rect.position.set(
         app.screen.width / 2 - rectWidth / 2,
@@ -270,7 +270,7 @@ function createSettingsOverlay() {
     ticker.stop();
     clearInterval(timer);
     const rect = new PIXI.Graphics();
-    const rectWidth = app.screen.width > 400 ? app.screen.width / 2 : 400;
+    const rectWidth = app.screen.width;
     const rectHeight = app.screen.height / 2;
     rect.beginFill(color1).drawRect(0, 0, rectWidth, rectHeight).endFill();
     rect.position.set(
@@ -299,14 +299,14 @@ function createSettingsOverlay() {
 
     for (let i = 0; i < textures.length; i++) {
         const row = new PIXI.Graphics();
-        const xPosition = (i+1) * 192;
-        const yPosition = 128;
+        const xPosition = (i+1) * 128;
+        const yPosition = 64;
 
         if (i > (gameStatus.length-1)) {
             gameStatus[i] = i % 2;
         }
 
-        row.beginFill(tableColors[gameStatus[i]]).drawRect(xPosition, yPosition, 128, 128).endFill();
+        row.beginFill(tableColors[gameStatus[i]]).drawCircle(xPosition, yPosition, 48).endFill();
         row.position.set(
             0,
             80
@@ -318,7 +318,7 @@ function createSettingsOverlay() {
         });
         rowText.anchor.set(0.5);
         row.addChild(rowText);
-        rowText.position.set(xPosition + 64, yPosition + 156);
+        rowText.position.set(xPosition, yPosition + 72);
 
         row.interactive = true;
         row.buttonMode = true;
@@ -326,14 +326,14 @@ function createSettingsOverlay() {
             gameStatus[i] = (gameStatus[i]+1) >= tableColors.length ? 0 : (gameStatus[i]+1);
             rowText.text = gameStatusDict[gameStatus[i]];
             localStorage.setItem("gameStatus", gameStatus);
-            row.beginFill(tableColors[gameStatus[i]]).drawRect(xPosition, yPosition, 128, 128).endFill();
+            row.beginFill(tableColors[gameStatus[i]]).drawCircle(xPosition, yPosition, 48).endFill();
         });
 
         rect.addChild(row);
         const icon = new PIXI.Sprite(textures[i]);
         row.addChild(icon);
-        icon.x = xPosition + 25;
-        icon.y = yPosition + 25;
+        icon.anchor.set(0.5);
+        icon.position.set(xPosition, yPosition);
     }
 
     localStorage.setItem("gameStatus", gameStatus);
