@@ -1,6 +1,7 @@
 const texturePaths = [
-  '/icons/bee.svg',
-  '/icons/cat.svg',
+    '/icons/bee.svg',
+    '/icons/cat.svg',
+    '/icons/Peacephin.svg',
 ];
 
 // Modify these to create more icons or make them move faster/slower
@@ -54,19 +55,19 @@ ticker.add(() => {
 let textures = [];
 for (let i in texturePaths) {
 
-  fetchAsync(texturePaths[i]).then(svgAsString => {
-    // Make white elements transparent
-    const svgWithTransparency = svgAsString.replaceAll('fill="#FFFFFF"', 'fill="#FFFFFF" fill-opacity="0.0"');
+    fetchAsync(texturePaths[i]).then(svgAsString => {
+        // Make white elements transparent
+        const svgWithTransparency = svgAsString.replaceAll('fill="#FFFFFF"', 'fill="#FFFFFF" fill-opacity="0.0"');
 
-    // Encode string as base64 svg, so that PIXI.SVGResource can load it
-    const b64string = "data:image/svg+xml;base64," + btoa(unescape(encodeURIComponent(svgWithTransparency)));
-    textures.push(PIXI.Texture.from(new PIXI.SVGResource(b64string, { height: 64 })));
+        // Encode string as base64 svg, so that PIXI.SVGResource can load it
+        const b64string = "data:image/svg+xml;base64," + btoa(unescape(encodeURIComponent(svgWithTransparency)));
+        textures.push(PIXI.Texture.from(new PIXI.SVGResource(b64string, {height: 64})));
 
-    // Start the game if all textures have been loaded
-    if (Number(i) === (texturePaths.length - 1)) {
-      createSettingsOverlay();
-    }
-  });
+        // Start the game if all textures have been loaded
+        if (Number(i) === (texturePaths.length - 1)) {
+            createSettingsOverlay();
+        }
+    });
 }
 
 function createSettingSpirit() {
@@ -292,10 +293,10 @@ function createSettingsOverlay() {
 
     for (let i = 0; i < textures.length; i++) {
         const row = new PIXI.Graphics();
-        const xPosition = app.screen.width / 2 - (textures.length*64) + (i+1) * 128 - (64);
+        const xPosition = app.screen.width / 2 - (textures.length * 64) + (i + 1) * 128 - (64);
         const yPosition = 64;
 
-        if (i > (gameStatus.length-1)) {
+        if (i > (gameStatus.length - 1)) {
             gameStatus[i] = i % 2;
         }
 
@@ -317,7 +318,7 @@ function createSettingsOverlay() {
         row.interactive = true;
         row.buttonMode = true;
         row.on("click", (_) => {
-            gameStatus[i] = (gameStatus[i]+1) >= tableColors.length ? 0 : (gameStatus[i]+1);
+            gameStatus[i] = (gameStatus[i] + 1) >= tableColors.length ? 0 : (gameStatus[i] + 1);
             rowText.text = gameStatusDict[gameStatus[i]];
             saveGameStatus(gameStatus);
             row.beginFill(tableColors[gameStatus[i]]).drawCircle(xPosition, yPosition, 48).endFill();
@@ -334,54 +335,56 @@ function createSettingsOverlay() {
 }
 
 function saveGameStatus(gameStatus) {
-  if (gameStatus.length > textures.length) {
-    gameStatus = gameStatus.slice(0, textures.length);
-  }
+    if (gameStatus.length > textures.length) {
+        gameStatus = gameStatus.slice(0, textures.length);
+    }
 
-  localStorage.setItem("gameStatus", gameStatus);
+    localStorage.setItem("gameStatus", gameStatus);
 }
 
 function clearExistingOverlays() {
     app.stage.removeChildren();
 }
 
-async function fetchAsync (url) {
-  let response = await fetch(url);
-  let data = await response.text();
-  return data;
+async function fetchAsync(url) {
+    let response = await fetch(url);
+    let data = await response.text();
+    return data;
 }
 
 function createDistribution(array) {
-  // Creates a distribution so that shoot target spawn more often
-  const probabilityShootTargets = 0.7;
-  const probabilityPeaceTargets = 1 - probabilityShootTargets;
+    // Creates a distribution so that shoot target spawn more often
+    const probabilityShootTargets = 0.7;
+    const probabilityPeaceTargets = 1 - probabilityShootTargets;
 
-  let weights = [];
-  const gameStatus = localStorage.getItem("gameStatus").split(',').map(Number);
-  const counts = {};
-  gameStatus.forEach(function (x) { counts[x] = (counts[x] || 0) + 1; });
+    let weights = [];
+    const gameStatus = localStorage.getItem("gameStatus").split(',').map(Number);
+    const counts = {};
+    gameStatus.forEach(function (x) {
+        counts[x] = (counts[x] || 0) + 1;
+    });
 
-  for (i = 0; i < array.length; i++) {
-    if (gameStatus[i] === 0) {
-      weights.push(probabilityPeaceTargets/counts[0]);
-    } else {
-      weights.push(probabilityShootTargets/counts[1]);
+    for (i = 0; i < array.length; i++) {
+        if (gameStatus[i] === 0) {
+            weights.push(probabilityPeaceTargets / counts[0]);
+        } else {
+            weights.push(probabilityShootTargets / counts[1]);
+        }
     }
-  }
 
-  const distribution = [];
-  const sum = weights.reduce((a, b) => a + b);
-  const quant = 100 / sum;
-  for (let i = 0; i < array.length; ++i) {
-      const limit = quant * weights[i];
-      for (let j = 0; j < limit; ++j) {
-          distribution.push(i);
-      }
-  }
-  return distribution;
+    const distribution = [];
+    const sum = weights.reduce((a, b) => a + b);
+    const quant = 100 / sum;
+    for (let i = 0; i < array.length; ++i) {
+        const limit = quant * weights[i];
+        for (let j = 0; j < limit; ++j) {
+            distribution.push(i);
+        }
+    }
+    return distribution;
 };
 
 const randomIndex = (distribution) => {
-  const index = Math.floor(distribution.length * Math.random());
-  return distribution[index];
+    const index = Math.floor(distribution.length * Math.random());
+    return distribution[index];
 };
