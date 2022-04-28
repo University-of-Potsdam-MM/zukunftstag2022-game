@@ -63,7 +63,12 @@ for (let i in texturePaths) {
 
     fetchAsync(texturePaths[i]).then(svgAsString => {
         // Make white elements transparent
-        const svgWithTransparency = svgAsString.replaceAll('fill="#FFFFFF"', 'fill="#FFFFFF" fill-opacity="0.0"');
+        let svgWithTransparency = svgAsString.replaceAll('fill="#FFFFFF"', 'fill="#FFFFFF" fill-opacity="0.0"');
+        svgWithTransparency = svgWithTransparency.replaceAll('fill="#FFF"', 'fill="#FFF" fill-opacity="0.0"');
+        svgWithTransparency = svgWithTransparency.replaceAll('fill="#ffffff"', 'fill="#ffffff" fill-opacity="0.0"');
+        svgWithTransparency = svgWithTransparency.replaceAll('fill="#fff"', 'fill="#fff" fill-opacity="0.0"');
+        svgWithTransparency = svgWithTransparency.replaceAll('fill:#ffffff', 'fill:#ffffff, fill-opacity:0.0');
+        svgWithTransparency = svgWithTransparency.replaceAll('fill:#fff', 'fill:#fff, fill-opacity:0.0');
 
         // Encode string as base64 svg, so that PIXI.SVGResource can load it
         const b64string = "data:image/svg+xml;base64," + btoa(unescape(encodeURIComponent(svgWithTransparency)));
