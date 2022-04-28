@@ -295,8 +295,8 @@ function createSettingsOverlay() {
     createPlayAgainButton(rect, "Spiel starten");
 
     const gameStatusDict = {
-        0: "Leben lassen",
-        1: "Abschießen"
+        0: "Beschützen",
+        1: "Anstupsen"
     }
 
     savedGameStatus = localStorage.getItem("gameStatus");
