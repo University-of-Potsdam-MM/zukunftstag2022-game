@@ -1,7 +1,13 @@
 const texturePaths = [
     '/icons/bee.svg',
-    '/icons/cat.svg',
-    '/icons/Peacephin.svg',
+    '/icons/bonbon.svg',
+    '/icons/brot.svg',
+    '/icons/disney_logo.svg',
+    '/icons/eis.svg',
+    '/icons/ente.svg',
+    '/icons/peacephin.svg',
+    '/icons/pilz.svg',
+    '/icons/spinne.svg',
 ];
 
 // Modify these to create more icons or make them move faster/slower
