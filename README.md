@@ -1,3 +1,4 @@
+This project was moved to [https://gitup.uni-potsdam.de/zukunftstag/icons](https://gitup.uni-potsdam.de/zukunftstag/icons).
 # Zukunftstag 2022
 
 In dem Workshop am Zukunftstag/Girls' Day am 28.04.2022 wird neben der Vorstellung des Studiengang und des Berufsbilds Informatiker:in ein Spiel entwickelt. Bei der Entwicklung stehen eher die gestalterischen Aspekte im Vordergrund. Die Teilnehmer:innen können eine Figur oder ein Symbol selbst zeichnen, welches anschließend digitalisiert und in ein Spiel geladen wird. Dadurch können Einblicke in die Entwicklung und Gestaltung von Softwareprojekten gewonnen werden, die zeigen, wie eng der digitale Raum mit dem realen verbunden sein kann.
